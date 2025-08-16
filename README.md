@@ -1,70 +1,110 @@
-# Getting Started with Create React App
+# Modern Portfolio Website
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A beautiful, responsive, and modern portfolio website built with React, Tailwind CSS, and Framer Motion. This portfolio showcases your projects, skills, and experience with smooth animations and a clean, professional design.
 
-## Available Scripts
+![Portfolio Preview](https://via.placeholder.com/1200x630/1a202c/ffffff?text=Portfolio+Preview)
 
-In the project directory, you can run:
+## 🚀 Features
 
-### `npm start`
+- **Multi-page Navigation** - Built with React Router for seamless page transitions
+- **Dark/Light Mode** - Toggle between light and dark themes
+- **Responsive Design** - Fully responsive layout that works on all devices
+- **Smooth Animations** - Powered by Framer Motion for buttery smooth transitions
+- **Modern UI/UX** - Clean, professional design with attention to detail
+- **Contact Form** - Integrated with EmailJS for easy communication
+- **Project Showcase** - Beautiful project cards with filtering capabilities
+- **Skills Section** - Visual representation of your skills and expertise
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 🛠️ Technologies Used
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- React 18
+- React Router v6
+- Tailwind CSS
+- Framer Motion
+- Hero Icons
+- EmailJS
+- PostCSS
+- Autoprefixer
 
-### `npm test`
+## 📦 Getting Started
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Prerequisites
 
-### `npm run build`
+- Node.js (v14 or later)
+- npm or yarn
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Installation
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Aurialedge/Portfolio.git
+   cd portfolio
+   ```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+2. Install dependencies:
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
 
-### `npm run eject`
+3. Create a `.env` file in the root directory and add your EmailJS credentials:
+   ```
+   REACT_APP_EMAILJS_PUBLIC_KEY=your_emailjs_public_key
+   REACT_APP_EMAILJS_SERVICE_ID=your_emailjs_service_id
+   REACT_APP_EMAILJS_TEMPLATE_ID=your_emailjs_template_id
+   ```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+4. Start the development server:
+   ```bash
+   npm start
+   # or
+   yarn start
+   ```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+   Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## 🚀 Available Scripts
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+- `npm start` - Start the development server
+- `npm run build` - Build the app for production
+- `npm test` - Run tests
+- `npm run format` - Format code with Prettier
+- `npm run lint` - Run ESLint
+- `npm run lint:fix` - Fix ESLint issues
 
-## Learn More
+## 🎨 Customization
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Theme Colors
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+You can customize the color scheme by editing the `tailwind.config.js` file. The primary and secondary colors are defined in the `theme.extend.colors` section.
 
-### Code Splitting
+### Content
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Update the following files to customize the content:
 
-### Analyzing the Bundle Size
+- `src/data/projects.js` - Add/update your projects
+- `src/data/skills.js` - Update your skills
+- `src/data/experience.js` - Add your work experience
+- `src/data/education.js` - Add your education
+- `src/components/About/About.js` - Update your bio and about section
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### Images
 
-### Making a Progressive Web App
+Replace the placeholder images in the `public/images` directory with your own images. Update the image paths in the respective components.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## 📝 License
 
-### Advanced Configuration
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## 🙏 Acknowledgments
 
-### Deployment
+- [Create React App](https://create-react-app.dev/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Framer Motion](https://www.framer.com/motion/)
+- [Hero Icons](https://heroicons.com/)
+- [EmailJS](https://www.emailjs.com/)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## 📬 Contact
 
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+For any questions or suggestions, feel free to open an issue or submit a pull request.
