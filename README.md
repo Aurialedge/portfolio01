@@ -1,110 +1,35 @@
-# Modern Portfolio Website
+# Shivraj Perkar · Portfolio
 
-A beautiful, responsive, and modern portfolio website built with React, Tailwind CSS, and Framer Motion. This portfolio showcases your projects, skills, and experience with smooth animations and a clean, professional design.
+Live at **https://shivrajperkar.vercel.app** — React 19, Tailwind CSS, Framer Motion.
 
-![Portfolio Preview](https://via.placeholder.com/1200x630/1a202c/ffffff?text=Portfolio+Preview)
+## Projects update themselves from GitHub
 
-## 🚀 Features
+Every public, non-fork repository on [github.com/Aurialedge](https://github.com/Aurialedge) appears in the Projects section automatically.
 
-- **Multi-page Navigation** - Built with React Router for seamless page transitions
-- **Dark/Light Mode** - Toggle between light and dark themes
-- **Responsive Design** - Fully responsive layout that works on all devices
-- **Smooth Animations** - Powered by Framer Motion for buttery smooth transitions
-- **Modern UI/UX** - Clean, professional design with attention to detail
-- **Contact Form** - Integrated with EmailJS for easy communication
-- **Project Showcase** - Beautiful project cards with filtering capabilities
-- **Skills Section** - Visual representation of your skills and expertise
+| Layer | When | What it does |
+| --- | --- | --- |
+| **Live fetch** (`src/lib/github.js`) | Each visit (cached 30 min per session) | One call to the GitHub API for the latest repo list, languages and push times. New repos show up without a redeploy. |
+| **Build snapshot** (`scripts/fetch-github.js`) | Before every `npm run build` | Saves all repos and a summary of each README to `src/data/github-snapshot.json`. Used for README-based descriptions and as a fallback if the API is rate-limited. |
+| **Daily rebuild** (`.github/workflows/refresh-portfolio.yml`) | 08:00 IST daily | Calls a Vercel deploy hook so the snapshot stays fresh. Needs the `VERCEL_DEPLOY_HOOK` repo secret; it skips itself until that is set. |
 
-## 🛠️ Technologies Used
+A project's description comes from, in order: the curated entry in `src/data/projects.js`, then the repo's GitHub description, then its README summary.
 
-- React 18
-- React Router v6
-- Tailwind CSS
-- Framer Motion
-- Hero Icons
-- EmailJS
-- PostCSS
-- Autoprefixer
+**To make a new project look good, add a description (and topics) to the repo on GitHub.** It flows through automatically.
 
-## 📦 Getting Started
+## Editing content
 
-### Prerequisites
+- `src/data/profile.js`: bio, experience, skills, achievements, certifications (all from the resume).
+- `src/data/projects.js`: featured projects, demo videos (YouTube IDs), live links, categories, hidden repos.
+- `public/Shivraj_Perkar_Resume.pdf`: the downloadable resume. Replace this file to update it.
 
-- Node.js (v14 or later)
-- npm or yarn
+## Contact form
 
-### Installation
+Uses EmailJS when `REACT_APP_EMAILJS_SERVICE_ID`, `REACT_APP_EMAILJS_TEMPLATE_ID` and `REACT_APP_EMAILJS_PUBLIC_KEY` are set (locally in `.env`, and in Vercel → Settings → Environment Variables). Without them, the form opens the visitor's mail app instead.
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/Aurialedge/Portfolio.git
-   cd portfolio
-   ```
+## Scripts
 
-2. Install dependencies:
-   ```bash
-   npm install
-   # or
-   yarn install
-   ```
-
-3. Create a `.env` file in the root directory and add your EmailJS credentials:
-   ```
-   REACT_APP_EMAILJS_PUBLIC_KEY=your_emailjs_public_key
-   REACT_APP_EMAILJS_SERVICE_ID=your_emailjs_service_id
-   REACT_APP_EMAILJS_TEMPLATE_ID=your_emailjs_template_id
-   ```
-
-4. Start the development server:
-   ```bash
-   npm start
-   # or
-   yarn start
-   ```
-
-   Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-## 🚀 Available Scripts
-
-- `npm start` - Start the development server
-- `npm run build` - Build the app for production
-- `npm test` - Run tests
-- `npm run format` - Format code with Prettier
-- `npm run lint` - Run ESLint
-- `npm run lint:fix` - Fix ESLint issues
-
-## 🎨 Customization
-
-### Theme Colors
-
-You can customize the color scheme by editing the `tailwind.config.js` file. The primary and secondary colors are defined in the `theme.extend.colors` section.
-
-### Content
-
-Update the following files to customize the content:
-
-- `src/data/projects.js` - Add/update your projects
-- `src/data/skills.js` - Update your skills
-- `src/data/experience.js` - Add your work experience
-- `src/data/education.js` - Add your education
-- `src/components/About/About.js` - Update your bio and about section
-
-### Images
-
-Replace the placeholder images in the `public/images` directory with your own images. Update the image paths in the respective components.
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- [Create React App](https://create-react-app.dev/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Framer Motion](https://www.framer.com/motion/)
-- [Hero Icons](https://heroicons.com/)
-- [EmailJS](https://www.emailjs.com/)
-
-## 📬 Contact
-
-For any questions or suggestions, feel free to open an issue or submit a pull request.
+```bash
+npm start            # dev server
+npm run build        # syncs GitHub snapshot, then builds
+npm run sync:github  # refresh the snapshot only (set GITHUB_TOKEN to avoid rate limits)
+```

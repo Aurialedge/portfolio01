@@ -22,8 +22,9 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "prebuild": "node scripts/fetch-github.js",
+    "sync:github": "node scripts/fetch-github.js",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
     "format": "prettier --write \"**/*.{js,jsx,json,md}\"",
     "lint": "eslint . --ext .js,.jsx",
     "lint:fix": "eslint . --ext .js,.jsx --fix"
@@ -59,11 +60,11 @@
     "prettier": "^3.2.5",
     "tailwind-scrollbar": "^3.1.0"
   },
-  "description": "A modern portfolio website built with React, Tailwind CSS, and Framer Motion",
+  "description": "Shivraj Perkar portfolio: React + Tailwind, projects synced live from GitHub",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Aurialedge/Portfolio.git"
+    "url": "git+https://github.com/Aurialedge/portfolio01.git"
   },
   "keywords": [
     "portfolio",
@@ -75,6 +76,6 @@
   "author": "Shivraj Perkar",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Aurialedge/Portfolio/issues"
+    "url": "https://github.com/Aurialedge/portfolio01/issues"
   }
 }

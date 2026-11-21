@@ -1,0 +1,27 @@
+# Rebuilds the Vercel site once a day so the GitHub snapshot (README summaries,
+# repo list fallback) stays fresh even on days nothing is pushed to this repo.
+#
+# Setup (one time):
+#   1. Vercel -> Project -> Settings -> Git -> Deploy Hooks -> create a hook for "main".
+#   2. GitHub -> this repo -> Settings -> Secrets and variables -> Actions ->
+#      add a secret named VERCEL_DEPLOY_HOOK with the hook URL.
+name: Refresh portfolio
+
+on:
+  schedule:
+    - cron: '30 2 * * *' # daily, 08:00 IST
+  workflow_dispatch:
+
+jobs:
+  redeploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Vercel deploy hook
+        env:
+          HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$HOOK" ]; then
+            echo "VERCEL_DEPLOY_HOOK secret not set; skipping."
+            exit 0
+          fi
+          curl -fsS -X POST "$HOOK"

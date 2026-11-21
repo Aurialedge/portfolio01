@@ -1,20 +1,63 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta name="description" content="Portfolio Website" />
-    <link rel="icon" href="/favicon.ico" />
-    <link rel="apple-touch-icon" href="/logo192.png" />
+    <title>Shivraj Perkar · Software Engineer</title>
+    <meta
+      name="description"
+      content="Shivraj Perkar — Software Engineer (Backend, Distributed Systems, Full-Stack). CS at IIIT Nagpur. Projects in Go, Node.js, Python, PostgreSQL and React, synced live from GitHub."
+    />
+    <meta name="author" content="Shivraj Perkar" />
+    <link rel="canonical" href="https://shivrajperkar.vercel.app/" />
+    <meta name="theme-color" content="#0a0b0f" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#fafaf9" media="(prefers-color-scheme: light)" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://shivrajperkar.vercel.app/" />
+    <meta property="og:title" content="Shivraj Perkar · Software Engineer" />
+    <meta property="og:description" content="Backend, distributed systems and full-stack projects — job queues in Go, RPC over RabbitMQ, secure microservice platforms." />
+    <meta property="og:image" content="https://shivrajperkar.vercel.app/og-image.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://shivrajperkar.vercel.app/og-image.png" />
+
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.json" />
-    <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate" />
-    <meta http-equiv="Pragma" content="no-cache" />
-    <meta http-equiv="Expires" content="0" />
-    <title>Portfolio</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://api.github.com" crossorigin />
+
+    <!-- Apply the saved theme before first paint to avoid a flash. -->
+    <script>
+      try {
+        if (localStorage.getItem('theme') === 'light') document.documentElement.classList.remove('dark');
+      } catch (e) {}
+    </script>
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Shivraj Perkar",
+        "jobTitle": "Software Engineer",
+        "url": "https://shivrajperkar.vercel.app/",
+        "alumniOf": "Indian Institute of Information Technology, Nagpur",
+        "sameAs": [
+          "https://github.com/Aurialedge",
+          "https://linkedin.com/in/shivraj-perkar-8a15b2252",
+          "https://leetcode.com/u/Shivraj18/"
+        ]
+      }
+    </script>
   </head>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <noscript>Enable JavaScript to view this portfolio, or email saperkar1862004@gmail.com.</noscript>
     <div id="root"></div>
   </body>
 </html>
