@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { ArrowDownTrayIcon, ArrowRightIcon, MapPinIcon } from '@heroicons/react/24/outline';
 import { profile } from '../data/profile';
 import { SocialLinks } from '../components/Footer';
+import { GamepadIcon } from '../components/Icons';
 import { languageColor } from '../lib/languages';
 import { timeAgo } from '../lib/github';
 import avatar from '../image/avatar.webp';
@@ -106,6 +107,17 @@ const Hero = ({ github }) => {
               </p>
             </div>
           </motion.div>
+
+          <motion.a
+            {...fade(0.03)}
+            href="#play"
+            className="group mb-5 inline-flex items-center gap-2 rounded-full border border-line bg-surface py-1 pl-1 pr-3 text-sm text-muted transition-colors hover:border-accent/50 hover:text-ink"
+          >
+            <span className="rounded-full bg-accent px-2 py-0.5 font-pixel text-[9px] leading-4 text-accent-ink">NEW</span>
+            <GamepadIcon className="h-4 w-4 text-accent" />
+            Explore this portfolio as a game
+            <ArrowRightIcon className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+          </motion.a>
 
           <motion.p {...fade(0.05)} className="eyebrow mb-4 flex flex-wrap gap-x-2">
             {profile.focus.split(' · ').map((part, i) => (

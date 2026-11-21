@@ -21,6 +21,14 @@ module.exports = {
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Consolas', 'monospace'],
+        pixel: ['"Press Start 2P"', 'ui-monospace', 'monospace'],
+      },
+      keyframes: {
+        toast: {
+          '0%': { opacity: '0', transform: 'translateY(-8px)' },
+          '10%, 85%': { opacity: '1', transform: 'translateY(0)' },
+          '100%': { opacity: '0', transform: 'translateY(-4px)' },
+        },
       },
       maxWidth: { page: '72rem' },
     },

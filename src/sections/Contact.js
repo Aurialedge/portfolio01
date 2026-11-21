@@ -16,7 +16,7 @@ const emailConfigured = Object.values(EMAILJS).every(Boolean);
 const inputCls =
   'form-input w-full rounded-lg border-line bg-bg px-3 py-2.5 text-sm text-ink placeholder:text-subtle focus:border-accent focus:ring-accent';
 
-const ContactForm = () => {
+export const ContactForm = () => {
   const [form, setForm] = useState({ name: '', email: '', message: '' });
   const [status, setStatus] = useState('idle'); // idle | sending | sent | error
 

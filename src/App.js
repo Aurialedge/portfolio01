@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Hero from './sections/Hero';
@@ -9,6 +9,17 @@ import Skills from './sections/Skills';
 import Achievements from './sections/Achievements';
 import Contact from './sections/Contact';
 import useGitHubProjects from './hooks/useGitHubProjects';
+
+// The game is only downloaded when someone opens Play mode.
+const PlayMode = lazy(() => import('./game/PlayMode'));
+
+const isPlayHash = () => typeof window !== 'undefined' && window.location.hash === '#play';
+
+const GameLoading = () => (
+  <div className="fixed inset-0 z-[55] grid place-items-center bg-[#1f3b1a] font-pixel text-xs text-amber-300">
+    LOADING WORLD…
+  </div>
+);
 
 export const ThemeContext = createContext({ darkMode: true, toggleDarkMode: () => {} });
 
@@ -25,6 +36,18 @@ function initialTheme() {
 const App = () => {
   const [darkMode, setDarkMode] = useState(initialTheme);
   const github = useGitHubProjects();
+  const [playing, setPlaying] = useState(isPlayHash);
+
+  useEffect(() => {
+    const onHash = () => isPlayHash() && setPlaying(true);
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
+
+  const exitPlay = useCallback(() => {
+    setPlaying(false);
+    window.history.replaceState(null, '', window.location.pathname + window.location.search);
+  }, []);
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode);
@@ -48,6 +71,11 @@ const App = () => {
         <Contact />
       </main>
       <Footer />
+      {playing && (
+        <Suspense fallback={<GameLoading />}>
+          <PlayMode github={github} onExit={exitPlay} />
+        </Suspense>
+      )}
     </ThemeContext.Provider>
   );
 };

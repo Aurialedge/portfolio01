@@ -16,6 +16,14 @@ A project's description comes from, in order: the curated entry in `src/data/pro
 
 **To make a new project look good, add a description (and topics) to the repo on GitHub.** It flows through automatically.
 
+## Play mode 🎮
+
+Click **Play** in the navbar (or open `/#play`) to explore the portfolio as a 2D pixel town. Walk between six buildings (About, Experience, Projects Arcade, Skills, Trophy Hall, Contact), earn XP, and complete the quest. The Arcade lists the same live GitHub projects as the main site.
+
+- Controls: WASD / arrow keys, Shift to run, E to interact, M for the fast-travel map, Esc to exit. Phones get an on-screen D-pad.
+- Code lives in `src/game/`. Map layout and buildings are in `world.js`, pixel art in `sprites.js` (drawn in code, no image assets), building interiors in `Panels.js`.
+- The game is a lazily loaded chunk (~14 kB gzipped), so it does not slow down the main site.
+
 ## Editing content
 
 - `src/data/profile.js`: bio, experience, skills, achievements, certifications (all from the resume).

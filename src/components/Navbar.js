@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Bars3Icon, MoonIcon, SunIcon, XMarkIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 import { ThemeContext } from '../App';
 import { profile } from '../data/profile';
+import { GamepadIcon } from './Icons';
 
 export const NAV = [
   { id: 'about', label: 'About' },
@@ -84,6 +85,14 @@ const Navbar = () => {
         </div>
 
         <div className="flex items-center gap-1">
+          <a
+            href="#play"
+            className="mr-1 inline-flex items-center gap-1.5 rounded-lg border border-accent/40 bg-accent/10 px-3 py-2 text-sm font-medium text-accent transition-colors hover:bg-accent/20"
+            title="Explore the portfolio as a game"
+          >
+            <GamepadIcon className="h-4 w-4" />
+            Play
+          </a>
           <ThemeToggle />
           <a href={profile.resume} download className="btn-primary ml-1 hidden !py-2 sm:inline-flex">
             <ArrowDownTrayIcon className="h-4 w-4" />
