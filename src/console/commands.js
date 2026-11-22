@@ -6,6 +6,7 @@ export const COMMANDS = [
   ['ls', 'list services and their status'],
   ['route <node>', 'open a node, e.g. "route projects" (or just type "projects")'],
   ['inspect <project>', 'jump to a project, e.g. "inspect taskflow"'],
+  ['chaos', 'open the TaskFlow chaos lab: kill workers, watch recovery'],
   ['whoami', 'one-line summary'],
   ['resume', 'download my resume (PDF)'],
   ['email | github | linkedin', 'reach me'],
@@ -21,6 +22,7 @@ export const COMPLETIONS = [
   'ls',
   'route',
   'inspect',
+  'chaos',
   'whoami',
   'resume',
   'email',
@@ -84,6 +86,9 @@ export function parse(raw) {
       return [{ type: 'inspect', query: arg }];
     case 'whoami':
       return [{ type: 'whoami' }];
+    case 'chaos':
+    case 'lab':
+      return [{ type: 'chaos' }];
     case 'resume':
     case 'cv':
     case 'pdf':

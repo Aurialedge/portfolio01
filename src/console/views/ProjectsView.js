@@ -8,6 +8,7 @@ import { CATEGORIES } from '../../data/projects';
 import { timeAgo } from '../../lib/github';
 import { profile } from '../../data/profile';
 import { ViewHeader } from './common';
+import ChaosLab from '../lab/ChaosLab';
 
 const SORTS = {
   highlighted: { label: 'Highlighted', fn: (a, b) => b.curated - a.curated || b.pushedAt.localeCompare(a.pushedAt) },
@@ -31,7 +32,7 @@ const SyncBadge = ({ source, syncedAt, loading }) => (
 );
 
 /** `focus` = { id, n } from the console's "inspect" command; n changes on every request so repeats re-trigger. */
-const ProjectsView = ({ github, focus }) => {
+const ProjectsView = ({ github, focus, labSignal, onEvent }) => {
   const { projects, source, syncedAt, loading } = github;
   const [video, setVideo] = useState(null);
   const [filter, setFilter] = useState('All');
@@ -97,7 +98,10 @@ const ProjectsView = ({ github, focus }) => {
 
       <div className="space-y-6">
         {featured.map((p, i) => (
-          <FeaturedProject key={p.id} project={p} index={i} onPlay={setVideo} highlight={highlight === p.id} />
+          <React.Fragment key={p.id}>
+            <FeaturedProject project={p} index={i} onPlay={setVideo} highlight={highlight === p.id} />
+            {p.id === 'TaskFlow' && <ChaosLab openSignal={labSignal} onEvent={onEvent} />}
+          </React.Fragment>
         ))}
       </div>
 

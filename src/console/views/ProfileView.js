@@ -87,6 +87,18 @@ const ProfileView = ({ github, onRoute }) => (
       </div>
     </div>
 
+    <button
+      type="button"
+      onClick={() => onRoute('contact')}
+      className="mb-6 inline-flex items-center gap-2 rounded-full border border-ok/30 bg-ok/10 px-3 py-1 text-xs font-medium text-ok transition-colors hover:border-ok/60"
+    >
+      <span className="relative flex h-1.5 w-1.5">
+        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ok opacity-60" />
+        <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-ok" />
+      </span>
+      Open to SDE roles &amp; internships
+    </button>
+
     <p className="eyebrow mb-4 flex flex-wrap gap-x-2">
       {profile.focus.split(' · ').map((part, i) => (
         <span key={part} className="whitespace-nowrap">
@@ -149,9 +161,9 @@ const ProfileView = ({ github, onRoute }) => (
         </div>
         <dl className="grid grid-cols-3 gap-3">
           {stats.map((s) => (
-            <div key={s.label} className="card p-4">
+            <div key={s.label} className="card p-3.5">
               <dt className="sr-only">{s.label}</dt>
-              <dd className="text-lg font-semibold tracking-tight sm:text-xl">{s.value}</dd>
+              <dd className="whitespace-nowrap text-base font-semibold tracking-tight sm:text-lg">{s.value}</dd>
               <dd className="mt-1 text-xs leading-snug text-subtle">{s.label}</dd>
             </div>
           ))}

@@ -27,6 +27,8 @@ The whole portfolio runs as a small simulated distributed system, and the visito
 - **Mobile**: the map stays on top and a bottom dock replaces the console.
 - Each section ends with a "next hop" link, so it still reads top to bottom like a normal portfolio.
 
+- **Chaos lab** (under TaskFlow in Projects, or `/#chaos`, or the `chaos` command): a browser simulation of TaskFlow's guarantees. Visitors kill workers mid-job, inject failures and flood the queue, then watch leases expire, the sweeper requeue jobs, fencing tokens reject stale writes, and the DLQ replay. It has three drills to pass, and the duplicate-commit counter stays at 0. The logic is a pure reducer in `src/console/lab/taskflowSim.js`, with tests next to it.
+
 Code lives in `src/console/`: `topology.js` (nodes, edges, routing), `commands.js` (console parser), `Console.js` (shell and state), `views/` (one file per section).
 
 ## Play mode 🎮

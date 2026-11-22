@@ -39,7 +39,9 @@ const DOCK_ICONS = {
   contact: EnvelopeIcon,
 };
 
-const hashNode = () => (typeof window === 'undefined' ? null : resolveNode(window.location.hash.slice(1)));
+const isChaosHash = () => typeof window !== 'undefined' && window.location.hash === '#chaos';
+const hashNode = () =>
+  typeof window === 'undefined' ? null : isChaosHash() ? 'projects' : resolveNode(window.location.hash.slice(1));
 const isDesktop = () => window.matchMedia('(min-width: 1024px)').matches;
 const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -96,6 +98,7 @@ const Console = ({ github, darkMode, toggleTheme, onPlay }) => {
   const [banner, setBanner] = useState(false);
   const [flight, setFlight] = useState(null);
   const [focus, setFocus] = useState(null);
+  const [labSignal, setLabSignal] = useState(() => (isChaosHash() ? 1 : 0));
   const [requests, setRequests] = useState(0);
   const [log, setLog] = useState([]);
 
@@ -127,7 +130,10 @@ const Console = ({ github, darkMode, toggleTheme, onPlay }) => {
       setTimeout(() => setFlight((f) => (f && f.id === id ? null : f)), hops * HOP_SECONDS * 1000 + 250);
 
       setActive(to);
-      if (to !== 'projects') setFocus(null);
+      if (to !== 'projects') {
+        setFocus(null);
+        setLabSignal(0);
+      }
       setRequests((r) => r + 1);
       if (!fromHistory) window.history.pushState(null, '', `#${to}`);
       emit('INFO', `GET /${to} → 200 · ${hops} hop${hops === 1 ? '' : 's'} via ${path.map((p) => BY_ID[p].svc).join(' → ')}`);
@@ -157,6 +163,7 @@ const Console = ({ github, darkMode, toggleTheme, onPlay }) => {
       if (window.location.hash === '#play') return; // handled by App (pixel-town game)
       const to = hashNode() || 'gateway';
       if (to !== live.current.active) route(to, { fromHistory: true });
+      if (isChaosHash()) setLabSignal(Date.now());
     };
     window.addEventListener('popstate', onNav);
     window.addEventListener('hashchange', onNav);
@@ -236,6 +243,11 @@ const Console = ({ github, darkMode, toggleTheme, onPlay }) => {
             emit('OK', `inspect ${p.title}${p.tagline ? ` · ${p.tagline}` : ''}`);
             break;
           }
+          case 'chaos':
+            if (live.current.active !== 'projects') route('projects', { scroll: false });
+            setLabSignal(Date.now());
+            emit('OK', 'chaos lab armed · try killing a busy worker');
+            break;
           case 'help':
             COMMANDS.forEach(([c, d]) => emit('INFO', `${c.padEnd(26, ' ')} ${d}`));
             break;
@@ -306,7 +318,7 @@ const Console = ({ github, darkMode, toggleTheme, onPlay }) => {
     const unseen = ORDER.filter((id) => !visited.has(id));
     if (!unseen.length) return ['route contact', 'resume', 'email'];
     const s = unseen.slice(0, 3).map((id) => `route ${id}`);
-    if (active === 'projects') s.unshift('inspect taskflow');
+    if (active === 'projects') s.unshift('chaos', 'inspect taskflow');
     else if (visited.size <= 1) s.push('help');
     return s;
   }, [visited, active]);
@@ -322,7 +334,7 @@ const Console = ({ github, darkMode, toggleTheme, onPlay }) => {
   const views = {
     gateway: <ProfileView github={github} onRoute={route} />,
     experience: <ExperienceView />,
-    projects: <ProjectsView github={github} focus={focus} />,
+    projects: <ProjectsView github={github} focus={focus} labSignal={labSignal} onEvent={emit} />,
     skills: <SkillsView languages={github.languages} />,
     awards: <AwardsView />,
     contact: <ContactView />,
