@@ -114,7 +114,6 @@ const ContactView = () => {
   return (
     <div>
       <ViewHeader
-        eyebrow="egress"
         title="Let's build something."
         description="Open to software engineering roles and internships, especially backend, distributed systems, and full-stack work. The fastest way to reach me is email."
       />

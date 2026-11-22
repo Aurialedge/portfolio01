@@ -8,7 +8,7 @@ const SkillsView = ({ languages }) => {
   const max = languages[0]?.count || 1;
   return (
     <div>
-      <ViewHeader eyebrow="skills-svc" title="Tools I reach for." />
+      <ViewHeader title="Tools I reach for." />
       <div className="grid gap-4 xl:grid-cols-[1.6fr_1fr]">
         <div className="grid gap-4 sm:grid-cols-2">
           {skills.map((s) => (
@@ -39,7 +39,8 @@ const SkillsView = ({ languages }) => {
                     className="h-full rounded-full"
                     style={{ background: languageColor(l.name) }}
                     initial={{ width: 0 }}
-                    animate={{ width: `${(l.count / max) * 100}%` }}
+                    whileInView={{ width: `${(l.count / max) * 100}%` }}
+                    viewport={{ once: true }}
                     transition={{ duration: 0.7, delay: 0.05 * i, ease: 'easeOut' }}
                   />
                 </div>

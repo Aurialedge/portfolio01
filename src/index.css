@@ -32,7 +32,6 @@
 
   html {
     scroll-behavior: smooth;
-    scroll-padding-top: 5rem;
   }
   body {
     @apply bg-bg text-ink font-sans antialiased;

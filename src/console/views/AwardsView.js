@@ -5,7 +5,7 @@ import { ViewHeader } from './common';
 
 const AwardsView = () => (
   <div>
-    <ViewHeader eyebrow="awards-svc" title="Achievements & certifications." />
+    <ViewHeader title="Achievements & certifications." />
     <div className="grid gap-4 xl:grid-cols-2">
       <div className="card p-6">
         <h3 className="flex items-center gap-2 font-semibold">

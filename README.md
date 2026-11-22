@@ -20,12 +20,11 @@ A project's description comes from, in order: the curated entry in `src/data/pro
 
 The whole portfolio runs as a small simulated distributed system, and the visitor is the operator.
 
-- **Topology map** (left): every section is a service node: `gateway` (profile), `experience-svc`, `projects-svc`, `skills-svc`, `awards-svc`, `egress` (contact). Clicking a node sends a request packet along the shortest route, and the **inspector** (right) shows that section.
+- **Topology map** (left): every section is a service node: `gateway` (profile), `experience-svc`, `projects-svc`, `skills-svc`, `awards-svc`, `egress` (contact). The **inspector** (right) is one continuous scroll through all of them. As you scroll, a scroll-spy routes a request packet to the section you're reading. Clicking a node, keys 1–6 or a console command smooth-scrolls there.
 - **Coverage**: nodes start as *unprobed* (dashed) and turn *healthy* once visited. Reaching 6/6 shows a full-coverage notice that points to Contact. Progress is saved in `localStorage`.
 - **Event log + console**: every navigation is logged as a request. Visitors can also type commands: `help`, `ls`, `route projects`, `inspect taskflow`, `resume`, `email`, `theme`, `clear`, `reset`. Tab completes and ↑/↓ recall history.
 - **Keyboard**: `1`–`6` jump to nodes, `/` focuses the console. Back and forward work, and each section has a shareable URL (`/#projects`).
 - **Mobile**: the map stays on top and a bottom dock replaces the console.
-- Each section ends with a "next hop" link, so it still reads top to bottom like a normal portfolio.
 
 - **Chaos lab** (under TaskFlow in Projects, or `/#chaos`, or the `chaos` command): a browser simulation of TaskFlow's guarantees. Visitors kill workers mid-job, inject failures and flood the queue, then watch leases expire, the sweeper requeue jobs, fencing tokens reject stale writes, and the DLQ replay. It has three drills to pass, and the duplicate-commit counter stays at 0. The logic is a pure reducer in `src/console/lab/taskflowSim.js`, with tests next to it.
 

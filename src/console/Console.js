@@ -20,7 +20,6 @@ import { BY_ID, NODES, ORDER, resolveNode, routeBetween } from './topology';
 import { COMMANDS, parse } from './commands';
 import TopologyMap, { HOP_SECONDS } from './TopologyMap';
 import { CommandLine, EventLog, fmtClock } from './EventLog';
-import { NextHop } from './views/common';
 import ProfileView from './views/ProfileView';
 import ExperienceView from './views/ExperienceView';
 import ProjectsView from './views/ProjectsView';
@@ -116,13 +115,26 @@ const Console = ({ github, darkMode, toggleTheme, onPlay }) => {
   useEffect(() => saveProgress(visited, complete), [visited, complete]);
 
   // ---- routing -------------------------------------------------------------------------------
+  // While a programmatic smooth scroll is running, the scroll-spy ignores the sections it passes.
+  const spyLock = useRef(null);
+  const lockSpy = useCallback((to, ms = 1500) => {
+    spyLock.current = { to, until: performance.now() + ms };
+  }, []);
+  const scrollToNode = useCallback(
+    (to, behavior = prefersReducedMotion() ? 'auto' : 'smooth') => {
+      const el = document.getElementById(`node-${to}`);
+      if (!el) return;
+      lockSpy(to);
+      el.scrollIntoView({ behavior, block: 'start' });
+    },
+    [lockSpy]
+  );
+
   const route = useCallback(
-    (to, { fromHistory = false, scroll = true } = {}) => {
+    (to, { fromHistory = false, fromScroll = false, scroll = true } = {}) => {
       const { active: from, visited: seen, complete: done } = live.current;
-      if (to === from) {
-        emit('INFO', `already on ${BY_ID[to].svc}`);
-        return;
-      }
+      if (scroll) scrollToNode(to);
+      if (to === from) return;
       const path = routeBetween(from, to);
       const hops = path.length - 1;
       const id = ++seq.current;
@@ -135,7 +147,8 @@ const Console = ({ github, darkMode, toggleTheme, onPlay }) => {
         setLabSignal(0);
       }
       setRequests((r) => r + 1);
-      if (!fromHistory) window.history.pushState(null, '', `#${to}`);
+      if (fromScroll) window.history.replaceState(null, '', `#${to}`);
+      else if (!fromHistory) window.history.pushState(null, '', `#${to}`);
       emit('INFO', `GET /${to} → 200 · ${hops} hop${hops === 1 ? '' : 's'} via ${path.map((p) => BY_ID[p].svc).join(' → ')}`);
 
       if (!seen.has(to)) {
@@ -148,22 +161,70 @@ const Console = ({ github, darkMode, toggleTheme, onPlay }) => {
           emit('OK', 'full coverage: every service is healthy. Thanks for the thorough review.');
         }
       }
-
-      if (scroll && inspectorRef.current) {
-        if (isDesktop()) inspectorRef.current.scrollTo({ top: 0 });
-        else inspectorRef.current.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'start' });
-      }
     },
-    [emit]
+    [emit, scrollToNode]
   );
+
+  // Scroll-spy: the section under the reading line becomes the active node, so scrolling drives the map.
+  useEffect(() => {
+    const main = inspectorRef.current;
+    let frame = 0;
+    const measure = () => {
+      frame = 0;
+      const atBottom = isDesktop()
+        ? main.scrollTop + main.clientHeight >= main.scrollHeight - 4
+        : window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 4;
+      let current = ORDER[0];
+      if (atBottom) current = ORDER[ORDER.length - 1];
+      else {
+        for (const id of ORDER) {
+          const el = document.getElementById(`node-${id}`);
+          if (el && el.getBoundingClientRect().top <= 220) current = id;
+        }
+      }
+      const lock = spyLock.current;
+      if (lock) {
+        const arrived = current === lock.to;
+        if (arrived || performance.now() > lock.until) spyLock.current = null;
+        if (!arrived && spyLock.current) return;
+        if (arrived) return;
+      }
+      if (current !== live.current.active) route(current, { fromScroll: true, scroll: false });
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(measure);
+    };
+    main.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      cancelAnimationFrame(frame);
+      main.removeEventListener('scroll', onScroll);
+      window.removeEventListener('scroll', onScroll);
+    };
+  }, [route]);
+
+  // Deep link (e.g. /#skills): jump straight to that section on load.
+  useEffect(() => {
+    const { start } = initial.current;
+    if (isChaosHash()) {
+      lockSpy('projects', 2500);
+      return undefined;
+    }
+    if (start === 'gateway') return undefined;
+    const t = setTimeout(() => scrollToNode(start, 'auto'), 50);
+    return () => clearTimeout(t);
+  }, [scrollToNode, lockSpy]);
 
   // Back / forward buttons, and links that change the hash.
   useEffect(() => {
     const onNav = () => {
       if (window.location.hash === '#play') return; // handled by App (pixel-town game)
       const to = hashNode() || 'gateway';
-      if (to !== live.current.active) route(to, { fromHistory: true });
-      if (isChaosHash()) setLabSignal(Date.now());
+      if (isChaosHash()) {
+        lockSpy('projects', 2500);
+        route('projects', { fromHistory: true, scroll: false });
+        setLabSignal(Date.now());
+      } else route(to, { fromHistory: true });
     };
     window.addEventListener('popstate', onNav);
     window.addEventListener('hashchange', onNav);
@@ -171,7 +232,7 @@ const Console = ({ github, darkMode, toggleTheme, onPlay }) => {
       window.removeEventListener('popstate', onNav);
       window.removeEventListener('hashchange', onNav);
     };
-  }, [route]);
+  }, [route, lockSpy]);
 
   // Keyboard: 1–6 route, "/" focuses the console.
   useEffect(() => {
@@ -238,13 +299,15 @@ const Console = ({ github, darkMode, toggleTheme, onPlay }) => {
               emit('ERR', `no project matching "${fx.query}"`);
               break;
             }
-            if (live.current.active !== 'projects') route('projects', { scroll: false });
+            lockSpy('projects', 2500);
+            route('projects', { scroll: false });
             setFocus({ id: p.id, n: Date.now() });
             emit('OK', `inspect ${p.title}${p.tagline ? ` · ${p.tagline}` : ''}`);
             break;
           }
           case 'chaos':
-            if (live.current.active !== 'projects') route('projects', { scroll: false });
+            lockSpy('projects', 2500);
+            route('projects', { scroll: false });
             setLabSignal(Date.now());
             emit('OK', 'chaos lab armed · try killing a busy worker');
             break;
@@ -311,7 +374,7 @@ const Console = ({ github, darkMode, toggleTheme, onPlay }) => {
         }
       }
     },
-    [emit, route, github.projects, toggleTheme, darkMode, onPlay]
+    [emit, route, lockSpy, github.projects, toggleTheme, darkMode, onPlay]
   );
 
   const suggestions = useMemo(() => {
@@ -411,7 +474,7 @@ const Console = ({ github, darkMode, toggleTheme, onPlay }) => {
 
       <div className="lg:flex lg:min-h-0 lg:flex-1">
         {/* ---------- control plane ---------- */}
-        <aside className="border-b border-line bg-surface/40 lg:flex lg:w-[420px] lg:shrink-0 lg:flex-col lg:border-b-0 lg:border-r xl:w-[460px]">
+        <aside className="relative border-b border-line bg-surface/40 lg:flex lg:w-[420px] lg:shrink-0 lg:flex-col lg:border-b-0 lg:border-r xl:w-[460px]">
           <PanelTitle right={<span className="hidden sm:inline">click a node · keys 1–6</span>}>topology</PanelTitle>
           <div className="px-3 py-3">
             <TopologyMap active={active} visited={visited} flight={flight} badges={badges} onRoute={route} />
@@ -433,7 +496,7 @@ const Console = ({ github, darkMode, toggleTheme, onPlay }) => {
         </aside>
 
         {/* ---------- inspector ---------- */}
-        <main ref={inspectorRef} className="scroll-mt-12 pb-24 lg:min-w-0 lg:flex-1 lg:overflow-y-auto lg:pb-0">
+        <main ref={inspectorRef} className="relative scroll-mt-12 pb-24 lg:min-w-0 lg:flex-1 lg:overflow-y-auto lg:pb-0">
           <div className="sticky top-12 z-30 flex h-10 items-center justify-between gap-3 border-b border-line bg-bg/85 px-4 font-mono text-[11px] backdrop-blur-md sm:px-6 lg:top-0 lg:px-10">
             <span className="flex min-w-0 items-center gap-2 text-subtle">
               <span className="hidden sm:inline">inspector</span>
@@ -469,52 +532,31 @@ const Console = ({ github, darkMode, toggleTheme, onPlay }) => {
           </div>
 
           <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-10 lg:py-12">
-            <AnimatePresence>
-              {banner && (
-                <motion.div
-                  initial={{ opacity: 0, y: -6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -6 }}
-                  className="mb-8 flex items-start justify-between gap-4 rounded-xl border border-ok/40 bg-ok/10 p-4 text-sm"
-                  role="status"
+            {ORDER.map((id) => {
+              const n = BY_ID[id];
+              return (
+                <section
+                  key={id}
+                  id={`node-${id}`}
+                  aria-label={n.label}
+                  className="scroll-mt-24 border-t border-line py-16 first:border-t-0 first:pt-0 lg:scroll-mt-12"
                 >
-                  <div>
-                    <p className="font-mono text-[11px] uppercase tracking-wider text-ok">full coverage · 6/6 healthy</p>
-                    <p className="mt-1 text-ink">
-                      You've seen every part of the system. If it looks like a fit, the egress node is how we talk.
+                  {id !== 'gateway' && (
+                    <p className="mb-6 flex items-center gap-3 font-mono text-[11px] text-subtle">
+                      <span className="text-accent">{n.key}</span>
+                      <span className="uppercase tracking-[0.18em] text-accent">{n.svc}</span>
+                      <span className="h-px flex-1 bg-line" />
+                      <span className={visited.has(id) ? 'text-ok' : 'text-subtle'}>
+                        {visited.has(id) ? '● healthy' : '○ unprobed'}
+                      </span>
                     </p>
-                    {active !== 'contact' && (
-                      <button type="button" onClick={() => route('contact')} className="link mt-2 font-medium">
-                        Route to contact →
-                      </button>
-                    )}
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setBanner(false)}
-                    className="rounded p-1 text-muted hover:text-ink"
-                    aria-label="Dismiss"
-                  >
-                    <XMarkIcon className="h-4 w-4" />
-                  </button>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                  )}
+                  {views[id]}
+                </section>
+              );
+            })}
 
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.div
-                key={active}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -4 }}
-                transition={{ duration: 0.18, ease: 'easeOut' }}
-              >
-                {views[active]}
-                <NextHop current={active} onRoute={route} />
-              </motion.div>
-            </AnimatePresence>
-
-            <footer className="mt-16 flex flex-col gap-1 border-t border-line pt-6 font-mono text-[11px] text-subtle sm:flex-row sm:justify-between">
+            <footer className="flex flex-col gap-1 border-t border-line pt-6 font-mono text-[11px] text-subtle sm:flex-row sm:justify-between">
               <span>
                 © {new Date().getFullYear()} {profile.name}
               </span>
@@ -523,6 +565,36 @@ const Console = ({ github, darkMode, toggleTheme, onPlay }) => {
           </div>
         </main>
       </div>
+
+      <AnimatePresence>
+        {banner && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 12 }}
+            className="fixed bottom-20 right-4 z-50 flex max-w-sm items-start gap-4 rounded-xl border border-ok/40 bg-surface p-4 text-sm shadow-2xl shadow-black/30 lg:bottom-6 lg:right-6"
+            role="status"
+          >
+            <div>
+              <p className="font-mono text-[11px] uppercase tracking-wider text-ok">full coverage · 6/6 healthy</p>
+              <p className="mt-1 text-ink">You have seen every part of the system. If it looks like a fit, let us talk.</p>
+              {active !== 'contact' && (
+                <button type="button" onClick={() => route('contact')} className="link mt-2 font-medium">
+                  Route to contact →
+                </button>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={() => setBanner(false)}
+              className="rounded p-1 text-muted hover:text-ink"
+              aria-label="Dismiss"
+            >
+              <XMarkIcon className="h-4 w-4" />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ---------- mobile dock ---------- */}
       <nav

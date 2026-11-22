@@ -90,7 +90,6 @@ const ProjectsView = ({ github, focus, labSignal, onEvent }) => {
   return (
     <div>
       <ViewHeader
-        eyebrow="projects-svc"
         title="Things I've built."
         description="Primary services first, then every public repository on my GitHub. This list updates itself whenever I push a new project."
         aside={<SyncBadge source={source} syncedAt={syncedAt} loading={loading} />}

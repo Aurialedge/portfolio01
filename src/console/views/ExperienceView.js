@@ -4,7 +4,7 @@ import { ViewHeader } from './common';
 
 const ExperienceView = () => (
   <div>
-    <ViewHeader eyebrow="experience-svc" title="Where I've shipped." />
+    <ViewHeader title="Where I've shipped." />
     <ol className="relative space-y-6 border-l border-line pl-6 sm:pl-8">
       {experience.map((job) => (
         <li key={job.company} className="relative">
