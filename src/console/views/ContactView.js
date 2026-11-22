@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
 import emailjs from '@emailjs/browser';
 import { CheckIcon, ClipboardIcon, EnvelopeIcon, PaperAirplaneIcon } from '@heroicons/react/24/outline';
-import Section, { reveal } from '../components/Section';
-import { profile } from '../data/profile';
-import { GitHubIcon, LinkedInIcon, LeetCodeIcon } from '../components/Icons';
+import { ViewHeader } from './common';
+import { profile } from '../../data/profile';
+import { GitHubIcon, LinkedInIcon, LeetCodeIcon } from '../../components/Icons';
 
 const EMAILJS = {
   serviceId: process.env.REACT_APP_EMAILJS_SERVICE_ID,
@@ -94,7 +93,7 @@ export const ContactForm = () => {
   );
 };
 
-const Contact = () => {
+const ContactView = () => {
   const [copied, setCopied] = useState(false);
   const copyEmail = async () => {
     try {
@@ -113,14 +112,14 @@ const Contact = () => {
   ];
 
   return (
-    <Section
-      id="contact"
-      eyebrow="Contact"
-      title="Let's build something."
-      description="Open to software engineering roles and internships, especially backend, distributed systems, and full-stack work. The fastest way to reach me is email."
-    >
-      <div className="grid gap-4 lg:grid-cols-[1fr_1.3fr]">
-        <motion.div {...reveal} className="space-y-4">
+    <div>
+      <ViewHeader
+        eyebrow="egress"
+        title="Let's build something."
+        description="Open to software engineering roles and internships, especially backend, distributed systems, and full-stack work. The fastest way to reach me is email."
+      />
+      <div className="grid gap-4 xl:grid-cols-[1fr_1.3fr]">
+        <div className="space-y-4">
           <div className="card p-6">
             <p className="text-sm text-subtle">Email</p>
             <div className="mt-1 flex items-center justify-between gap-3">
@@ -156,14 +155,12 @@ const Contact = () => {
               </li>
             ))}
           </ul>
-        </motion.div>
+        </div>
 
-        <motion.div {...reveal}>
-          <ContactForm />
-        </motion.div>
+        <ContactForm />
       </div>
-    </Section>
+    </div>
   );
 };
 
-export default Contact;
+export default ContactView;

@@ -41,14 +41,17 @@ export const ProjectLinks = ({ project, onPlay }) => (
   </div>
 );
 
-const ProjectCard = ({ project, onPlay }) => (
+const ProjectCard = ({ project, onPlay, highlight }) => (
   <motion.article
+    id={`svc-${project.id}`}
     layout
     initial={{ opacity: 0, y: 12 }}
     animate={{ opacity: 1, y: 0 }}
     exit={{ opacity: 0, scale: 0.98 }}
     transition={{ duration: 0.3 }}
-    className="card group flex flex-col overflow-hidden transition-colors hover:border-accent/40"
+    className={`card group flex scroll-mt-24 flex-col overflow-hidden transition-colors hover:border-accent/40 ${
+      highlight ? 'border-accent ring-2 ring-accent/30' : ''
+    }`}
   >
     {project.image && (
       <div className="aspect-[16/8] overflow-hidden border-b border-line bg-raised">

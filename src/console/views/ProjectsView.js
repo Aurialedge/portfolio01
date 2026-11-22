@@ -1,13 +1,13 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
-import Section, { reveal } from '../components/Section';
-import FeaturedProject from '../components/FeaturedProject';
-import ProjectCard from '../components/ProjectCard';
-import VideoModal from '../components/VideoModal';
-import { CATEGORIES } from '../data/projects';
-import { timeAgo } from '../lib/github';
-import { profile } from '../data/profile';
+import FeaturedProject from '../../components/FeaturedProject';
+import ProjectCard from '../../components/ProjectCard';
+import VideoModal from '../../components/VideoModal';
+import { CATEGORIES } from '../../data/projects';
+import { timeAgo } from '../../lib/github';
+import { profile } from '../../data/profile';
+import { ViewHeader } from './common';
 
 const SORTS = {
   highlighted: { label: 'Highlighted', fn: (a, b) => b.curated - a.curated || b.pushedAt.localeCompare(a.pushedAt) },
@@ -21,7 +21,7 @@ const SyncBadge = ({ source, syncedAt, loading }) => (
     href={profile.github}
     target="_blank"
     rel="noopener noreferrer"
-    className="inline-flex items-center gap-2 self-start rounded-full border border-line bg-surface px-3 py-1.5 font-mono text-[11px] text-muted hover:text-ink md:self-auto"
+    className="inline-flex shrink-0 items-center gap-2 self-start whitespace-nowrap rounded-full border border-line bg-surface px-3 py-1.5 font-mono text-[11px] text-muted hover:text-ink md:self-auto"
   >
     <span
       className={`h-1.5 w-1.5 rounded-full ${loading ? 'animate-pulse bg-subtle' : source === 'live' ? 'bg-ok' : 'bg-subtle'}`}
@@ -30,13 +30,15 @@ const SyncBadge = ({ source, syncedAt, loading }) => (
   </a>
 );
 
-const Projects = ({ github }) => {
+/** `focus` = { id, n } from the console's "inspect" command; n changes on every request so repeats re-trigger. */
+const ProjectsView = ({ github, focus }) => {
   const { projects, source, syncedAt, loading } = github;
   const [video, setVideo] = useState(null);
   const [filter, setFilter] = useState('All');
   const [query, setQuery] = useState('');
   const [sort, setSort] = useState('highlighted');
   const [expanded, setExpanded] = useState(false);
+  const [highlight, setHighlight] = useState(null);
   const closeVideo = useCallback(() => setVideo(null), []);
 
   const featured = useMemo(
@@ -44,6 +46,25 @@ const Projects = ({ github }) => {
     [projects]
   );
   const others = useMemo(() => projects.filter((p) => p.featuredRank < 0), [projects]);
+
+  // Make sure an inspected project is rendered, then scroll it into view and flash it.
+  useEffect(() => {
+    if (!focus) return undefined;
+    if (!featured.some((p) => p.id === focus.id)) {
+      setFilter('All');
+      setQuery('');
+      setExpanded(true);
+    }
+    setHighlight(focus.id);
+    const scroll = setTimeout(() => {
+      document.getElementById(`svc-${focus.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 120);
+    const clear = setTimeout(() => setHighlight(null), 2600);
+    return () => {
+      clearTimeout(scroll);
+      clearTimeout(clear);
+    };
+  }, [focus, featured]);
 
   const counts = useMemo(() => {
     const c = { All: others.length };
@@ -66,21 +87,22 @@ const Projects = ({ github }) => {
   const shown = expanded ? visible : visible.slice(0, PAGE);
 
   return (
-    <Section
-      id="projects"
-      eyebrow="Projects"
-      title="Things I've built."
-      description="Featured work first, then every public repository on my GitHub. This list updates itself whenever I push a new project."
-      aside={<SyncBadge source={source} syncedAt={syncedAt} loading={loading} />}
-    >
+    <div>
+      <ViewHeader
+        eyebrow="projects-svc"
+        title="Things I've built."
+        description="Primary services first, then every public repository on my GitHub. This list updates itself whenever I push a new project."
+        aside={<SyncBadge source={source} syncedAt={syncedAt} loading={loading} />}
+      />
+
       <div className="space-y-6">
         {featured.map((p, i) => (
-          <FeaturedProject key={p.id} project={p} index={i} onPlay={setVideo} />
+          <FeaturedProject key={p.id} project={p} index={i} onPlay={setVideo} highlight={highlight === p.id} />
         ))}
       </div>
 
-      <motion.div {...reveal} className="mt-20">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+      <div className="mt-16">
+        <div className="flex flex-col gap-4 2xl:flex-row 2xl:items-center 2xl:justify-between">
           <h3 className="text-xl font-semibold tracking-tight">
             All repositories <span className="font-mono text-sm font-normal text-subtle">({others.length})</span>
           </h3>
@@ -133,12 +155,12 @@ const Projects = ({ github }) => {
             </button>
           ))}
         </div>
-      </motion.div>
+      </div>
 
-      <motion.div layout className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <motion.div layout className="mt-6 grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
         <AnimatePresence mode="popLayout">
           {shown.map((p) => (
-            <ProjectCard key={p.id} project={p} onPlay={setVideo} />
+            <ProjectCard key={p.id} project={p} onPlay={setVideo} highlight={highlight === p.id} />
           ))}
         </AnimatePresence>
       </motion.div>
@@ -156,8 +178,8 @@ const Projects = ({ github }) => {
       )}
 
       <VideoModal video={video} onClose={closeVideo} />
-    </Section>
+    </div>
   );
 };
 
-export default Projects;
+export default ProjectsView;

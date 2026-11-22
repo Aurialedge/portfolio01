@@ -27,20 +27,3 @@ export const SocialLinks = ({ className = '' }) => (
     ))}
   </div>
 );
-
-const Footer = () => (
-  <footer className="border-t border-line">
-    <div className="container-page flex flex-col items-center justify-between gap-4 py-8 text-sm text-subtle sm:flex-row">
-      <p>
-        © {new Date().getFullYear()} {profile.name}. Projects sync automatically from{' '}
-        <a className="link" href={profile.github} target="_blank" rel="noopener noreferrer">
-          GitHub
-        </a>
-        .
-      </p>
-      <SocialLinks />
-    </div>
-  </footer>
-);
-
-export default Footer;

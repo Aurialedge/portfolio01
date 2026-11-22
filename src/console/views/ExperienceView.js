@@ -1,13 +1,13 @@
 import React from 'react';
-import { motion } from 'framer-motion';
-import Section, { reveal } from '../components/Section';
-import { experience } from '../data/profile';
+import { experience } from '../../data/profile';
+import { ViewHeader } from './common';
 
-const Experience = () => (
-  <Section id="experience" eyebrow="Experience" title="Where I've shipped.">
+const ExperienceView = () => (
+  <div>
+    <ViewHeader eyebrow="experience-svc" title="Where I've shipped." />
     <ol className="relative space-y-6 border-l border-line pl-6 sm:pl-8">
       {experience.map((job) => (
-        <motion.li key={job.company} {...reveal} className="relative">
+        <li key={job.company} className="relative">
           <span className="absolute -left-[31px] top-6 h-3 w-3 rounded-full border-2 border-bg bg-accent sm:-left-[39px]" />
           <div className="card p-6">
             <div className="flex flex-col justify-between gap-1 sm:flex-row sm:items-baseline">
@@ -32,10 +32,10 @@ const Experience = () => (
               ))}
             </div>
           </div>
-        </motion.li>
+        </li>
       ))}
     </ol>
-  </Section>
+  </div>
 );
 
-export default Experience;
+export default ExperienceView;

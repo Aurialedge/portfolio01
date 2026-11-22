@@ -2,7 +2,6 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { PlayIcon } from '@heroicons/react/24/solid';
 import { ProjectLinks } from './ProjectCard';
-import { reveal } from './Section';
 
 const Media = ({ project, onPlay }) => {
   if (project.video) {
@@ -52,13 +51,21 @@ const Media = ({ project, onPlay }) => {
   );
 };
 
-const FeaturedProject = ({ project, index, onPlay }) => (
-  <motion.article {...reveal} className="card grid gap-6 p-5 sm:p-6 lg:grid-cols-2 lg:gap-10 lg:p-8">
-    <div className={`min-w-0 ${index % 2 ? 'lg:order-2' : ''}`}>
+const FeaturedProject = ({ project, index, onPlay, highlight }) => (
+  <motion.article
+    id={`svc-${project.id}`}
+    initial={{ opacity: 0, y: 12 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.4, delay: 0.06 * index, ease: [0.22, 1, 0.36, 1] }}
+    className={`card grid scroll-mt-24 gap-6 p-5 transition-shadow sm:p-6 xl:grid-cols-2 xl:gap-10 xl:p-8 ${
+      highlight ? 'border-accent ring-2 ring-accent/30' : ''
+    }`}
+  >
+    <div className={`min-w-0 ${index % 2 ? 'xl:order-2' : ''}`}>
       <Media project={project} onPlay={onPlay} />
     </div>
     <div className="flex min-w-0 flex-col">
-      <p className="font-mono text-xs text-subtle">0{index + 1} · Featured</p>
+      <p className="font-mono text-xs text-subtle">0{index + 1} · primary service</p>
       <h3 className="mt-2 text-2xl font-semibold tracking-tight">{project.title}</h3>
       {project.tagline && <p className="mt-1 text-sm text-accent">{project.tagline}</p>}
       <p className="mt-4 text-sm leading-relaxed text-muted">{project.description}</p>
@@ -93,7 +100,7 @@ const FeaturedProject = ({ project, index, onPlay }) => (
           </span>
         ))}
       </div>
-      <div className="mt-6 lg:mt-auto lg:pt-6">
+      <div className="mt-6 xl:mt-auto xl:pt-6">
         <ProjectLinks project={project} onPlay={onPlay} />
       </div>
     </div>
