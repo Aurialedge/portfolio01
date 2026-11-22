@@ -9,6 +9,7 @@ export const COMMANDS = [
   ['whoami', 'one-line summary'],
   ['resume', 'download my resume (PDF)'],
   ['email | github | linkedin', 'reach me'],
+  ['play', 'explore the portfolio as a pixel-art town'],
   ['theme', 'toggle light / dark'],
   ['status', 'show coverage'],
   ['clear', 'clear the event log'],
@@ -25,6 +26,7 @@ export const COMPLETIONS = [
   'email',
   'github',
   'linkedin',
+  'play',
   'theme',
   'status',
   'clear',
@@ -93,6 +95,9 @@ export function parse(raw) {
     case 'linkedin':
     case 'leetcode':
       return [{ type: 'open', target: c }];
+    case 'play':
+    case 'game':
+      return [{ type: 'play' }];
     case 'theme':
       return [{ type: 'theme' }];
     case 'status':

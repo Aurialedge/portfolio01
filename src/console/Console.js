@@ -15,6 +15,7 @@ import {
   XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { profile } from '../data/profile';
+import { GamepadIcon } from '../components/Icons';
 import { BY_ID, NODES, ORDER, resolveNode, routeBetween } from './topology';
 import { COMMANDS, parse } from './commands';
 import TopologyMap, { HOP_SECONDS } from './TopologyMap';
@@ -80,7 +81,7 @@ const PanelTitle = ({ children, right }) => (
   </div>
 );
 
-const Console = ({ github, darkMode, toggleTheme }) => {
+const Console = ({ github, darkMode, toggleTheme, onPlay }) => {
   const bootAt = useRef(performance.now());
   const initial = useRef(null);
   if (!initial.current) {
@@ -153,6 +154,7 @@ const Console = ({ github, darkMode, toggleTheme }) => {
   // Back / forward buttons, and links that change the hash.
   useEffect(() => {
     const onNav = () => {
+      if (window.location.hash === '#play') return; // handled by App (pixel-town game)
       const to = hashNode() || 'gateway';
       if (to !== live.current.active) route(to, { fromHistory: true });
     };
@@ -272,6 +274,10 @@ const Console = ({ github, darkMode, toggleTheme }) => {
             }
             break;
           }
+          case 'play':
+            emit('OK', 'launching pixel-town client…');
+            onPlay();
+            break;
           case 'theme':
             toggleTheme();
             emit('OK', `theme → ${darkMode ? 'light' : 'dark'}`);
@@ -293,7 +299,7 @@ const Console = ({ github, darkMode, toggleTheme }) => {
         }
       }
     },
-    [emit, route, github.projects, toggleTheme, darkMode]
+    [emit, route, github.projects, toggleTheme, darkMode, onPlay]
   );
 
   const suggestions = useMemo(() => {
@@ -360,6 +366,16 @@ const Console = ({ github, darkMode, toggleTheme }) => {
           </span>
         </div>
 
+        <button
+          type="button"
+          onClick={onPlay}
+          className="flex items-center gap-1.5 rounded-lg border border-line px-2 py-1.5 font-mono text-[11px] text-muted transition-colors hover:border-accent/50 hover:text-ink"
+          title="Explore this portfolio as a pixel-art town"
+          aria-label="Play: explore the portfolio as a game"
+        >
+          <GamepadIcon className="h-4 w-4 text-accent" />
+          <span className="hidden sm:inline">Play</span>
+        </button>
         <button
           type="button"
           onClick={toggleTheme}
